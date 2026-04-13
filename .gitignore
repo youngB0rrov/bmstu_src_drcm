@@ -1,0 +1,17 @@
+# IDE
+.vscode/
+
+# Generated / mesh / output files
+*.geo
+*.neu
+*.out
+*.log
+*.gp
+*.vtk
+*.dat
+
+# Executable
+app
+
+# Results with images
+results/
