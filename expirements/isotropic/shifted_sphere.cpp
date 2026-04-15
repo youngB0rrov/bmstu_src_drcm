@@ -49,7 +49,7 @@ namespace expirements::sphere_shifted
                 solid box6 = plane(1,1,1;0,0,1)-bc=19;
 
                 solid YAP = box1 and box2 and box3 and box4 and box5 and box6;
-                solid sphere0 = sphere(CX,CY,CZ; RADIUS)-bc=100;
+                solid sphere0 = sphere(CX,CY,CZ; RADIUS)-bc=20;
 
                 solid matrix = YAP and not sphere0;
                 solid arm = sphere0 and YAP;
@@ -142,14 +142,11 @@ namespace expirements::sphere_shifted
 
         for (double eta = 0.0; eta <= 1.0 + 1e-12; eta += 0.1)
         {
-            // Нормированное смещение eta:
-            // eta = 0   -> сфера в центре
-            // eta = 1   -> сфера касается грани по x
             double shift = eta * maxShift;
 
-            double cx = 0.5 + shift;
+            double cx = 0.5;
             double cy = 0.5;
-            double cz = 0.5;
+            double cz = 0.5 + shift;
 
             LOG(INFO) << "Volume fraction = " << fiberVolumePercent << "%" << std::endl;
             LOG(INFO) << "eta = " << eta
@@ -179,7 +176,7 @@ namespace expirements::sphere_shifted
 
         std::vector<plot::PlotSpec> plots =
         {
-            {"results/vf_vs_cte.png", "Зависимость КЛТР от смещения сферы от центра ПЭО", plot::PlotType::Basic, {}, "Относительное смещение сферы", "Эффективный КЛТР, 10^{-6}/K"}
+            {"results/vf_vs_cte_shifted_z.png", "Зависимость КЛТР от смещения сферы от центра вдоль оси OZ", plot::PlotType::Basic, {}, "Cмещение сферы относительно центра", "Эффективный КЛТР, 10^{-6}/K"}
         };
 
         if (!plot::generatePlots("cte_vs_shifted.dat", plots))
