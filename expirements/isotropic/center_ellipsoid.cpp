@@ -41,7 +41,7 @@ namespace expiremets::ellipsoid_center
             f.close();
 
             system("netgen -geofile=disp_ellipsoid.geo -meshfile=disp_ellipsoid.neu -meshfiletype=\"Neutral Format\" -batchmode -veryfine >mesh_ellipsoid.out");
-            fromNeuFile("disp.neu");
+            fromNeuFile("disp_ellipsoid.neu");
             setRVEsize(_a, _b, _c);
         }
 
