@@ -1,4 +1,5 @@
 #include "ThermoElasticHomProblem.h"
+#include "ThermoElasticHomProblem.h"
 #include <fstream>
 #include "FEReaders.h"
 #include <math.h>
@@ -8,7 +9,7 @@
 #include "AnalyticModels.h"
 #include "PlotUtils.h"
 #include <vector>
-#include <algorithm>
+#include "TfelAnalyticModels.h"
 
 #define _USE_MATH_DEFINES
 
@@ -84,7 +85,7 @@ namespace expiremets::ellipsoid_center
             return 1;
         }
 
-        data << "vf alpha_x alpha_y alpha_z delta_alpha_eq\n";
+        data << "vf alpha_x alpha_y alpha_z delta_alpha_eq alpha_x_mt alpha_y_mt alpha_z_mt\n";
         data << std::scientific << std::setprecision(10);
 
         for (double rxy = 0.05; rxy < 0.5 / std::max(1.0, ratio_aspect); rxy+=0.05)
@@ -110,8 +111,9 @@ namespace expiremets::ellipsoid_center
             double az = problem.alphaZ();
 
             double delta_alpha_eq = std::sqrt(0.5 * ((ax - ay) * (ax - ay) + (ay - az) * (ay - az) + (az - ax) * (az - ax)));
+            auto result = analytical::moriTanakaCTE_ellipsoid_tfel(E_m, nu_m, alpha_m, E_f, nu_f, alpha_f, phi_f, rx, ry, rz);
 
-            data << fiberVolumePercent << ' ' << problem.alphaX() * 1e6 << ' ' << problem.alphaY() * 1e6 << ' ' << problem.alphaZ() * 1e6 << ' ' << delta_alpha_eq * 1e6 <<'\n';
+            data << fiberVolumePercent << ' ' << ax * 1e6 << ' ' << ay * 1e6 << ' ' << az * 1e6 << ' ' << delta_alpha_eq * 1e6 << ' ' << result.alpha_x * 1e6 << ' ' << result.alpha_y * 1e6 << ' ' << result.alpha_z * 1e6 << '\n';
         }
 
         data.close();
@@ -127,6 +129,15 @@ namespace expiremets::ellipsoid_center
             {
                 {5, "delta_{alpha}", "linespoints", 2, 7}
             }, "Объемная доля включений, %", "Абсолютная анизотропия, 10^{-6}/K"},
+            {"results/vf_vs_cte_ellipsoid_mori_tanaka.png", "Сравнение численного решения с моделью Мори-Танака", plot::PlotType::Comparison,
+            {
+                {2, "alpha_x", "linespoints", 2, 7},
+                {3, "alpha_y", "linespoints", 2, 5},
+                {4, "alpha_z", "linespoints", 2, 9},
+                {6, "alpha_x (MT)", "linespoints", 2, 11, 2},
+                {7, "alpha_y (MT)", "linespoints", 2, 13, 2},
+                {8, "alpha_z (MT)", "linespoints", 2, 3, 2},
+            }},
         };
 
         if (!plot::generatePlots("cte_vs_vf_ellipsoid.dat", plots))
